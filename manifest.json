@@ -1,0 +1,53 @@
+{
+  "manifest_version": 3,
+  "name": "Prompt Atelier｜出图提示词库",
+  "version": "1.0.0",
+  "description": "集中管理 AI 出图 Prompt，并在任意网页快速插入。",
+  "icons": {
+    "16": "assets/icon-16.png",
+    "32": "assets/icon-32.png",
+    "48": "assets/icon-48.png",
+    "128": "assets/icon-128.png"
+  },
+  "permissions": [
+    "storage",
+    "unlimitedStorage",
+    "activeTab",
+    "clipboardWrite"
+  ],
+  "background": {
+    "service_worker": "service-worker.js"
+  },
+  "options_page": "options.html",
+  "action": {
+    "default_title": "打开 Prompt Atelier",
+    "default_icon": {
+      "16": "assets/icon-16.png",
+      "32": "assets/icon-32.png"
+    }
+  },
+  "commands": {
+    "open-prompt-picker": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+P",
+        "mac": "Command+Shift+P"
+      },
+      "description": "打开快捷取词器"
+    }
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "http://*/*",
+        "https://*/*"
+      ],
+      "js": [
+        "config.js",
+        "shared/core.js",
+        "shared/storage.js",
+        "content.js"
+      ],
+      "run_at": "document_idle"
+    }
+  ]
+}

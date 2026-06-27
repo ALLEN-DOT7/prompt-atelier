@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prompt Atelier｜出图提示词工作台</title>
+    <link rel="stylesheet" href="options.css">
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <div class="brand-block">
+          <div class="brand-mark" aria-hidden="true">P</div>
+          <div>
+            <strong data-config="productName">Prompt Atelier</strong>
+            <span data-config="productSubtitle">AI 出图提示词工作台</span>
+          </div>
+        </div>
+
+        <nav class="main-nav" aria-label="主导航">
+          <button class="nav-item active" data-view-target="prompts">
+            <span class="nav-icon">⌘</span><span>Prompt 库</span><b id="prompt-count">0</b>
+          </button>
+          <button class="nav-item" data-view-target="styles">
+            <span class="nav-icon">◆</span><span>风格块</span><b id="style-count">0</b>
+          </button>
+          <button class="nav-item" data-view-target="composer">
+            <span class="nav-icon">＋</span><span>一致性合成器</span>
+          </button>
+        </nav>
+
+        <div class="sidebar-spacer"></div>
+        <button id="shortcut-button" class="secondary-button full-width">设置快捷键</button>
+        <div class="shortcut-hint"><kbd>⌘</kbd><kbd>⇧</kbd><kbd>P</kbd><span>随时取词</span></div>
+        <div class="attribution compact-attribution"></div>
+      </aside>
+
+      <main class="main-content">
+        <header class="topbar">
+          <div>
+            <p class="eyebrow">本地工作台</p>
+            <h1 id="view-title">Prompt 库</h1>
+          </div>
+          <div class="topbar-actions">
+            <div class="attribution header-attribution"></div>
+            <input id="import-file" type="file" accept="application/json,.json" hidden>
+            <button id="import-button" class="ghost-button">导入 JSON</button>
+            <button id="export-button" class="ghost-button">导出全部</button>
+            <button id="primary-add-button" class="primary-button">＋ 新建 Prompt</button>
+          </div>
+        </header>
+
+        <section id="view-prompts" class="view active-view">
+          <div class="stats-grid">
+            <article class="stat-card accent-stat"><span>全部 Prompt</span><strong id="stat-prompts">0</strong><small>你的出图素材库</small></article>
+            <article class="stat-card"><span>已收藏</span><strong id="stat-favorites">0</strong><small>快捷取词优先展示</small></article>
+            <article class="stat-card"><span>风格块</span><strong id="stat-styles">0</strong><small>保持作品一致性</small></article>
+          </div>
+
+          <div class="filter-panel">
+            <label class="search-field"><span>⌕</span><input id="search-input" type="search" placeholder="搜索标题、正文或标签"></label>
+            <select id="tool-filter" aria-label="按工具筛选"><option value="">全部工具</option></select>
+            <select id="tag-filter" aria-label="按标签筛选"><option value="">全部标签</option></select>
+            <select id="style-filter" aria-label="按风格块筛选"><option value="">全部风格块</option></select>
+            <label class="favorite-filter"><input id="favorite-filter" type="checkbox"><span>仅看收藏</span></label>
+          </div>
+
+          <div id="prompt-list" class="prompt-grid"></div>
+          <div id="prompt-empty" class="empty-state" hidden><div>✦</div><h2>还没有符合条件的 Prompt</h2><p>新建一条出图 Prompt，或调整搜索条件。</p></div>
+        </section>
+
+        <section id="view-styles" class="view">
+          <div class="section-heading"><div><p class="eyebrow">复用片段</p><h2>风格块与品牌预设</h2><p>把配色、光线、材质与禁用项整理成可重复使用的片段。</p></div><button id="add-style-button" class="primary-button">＋ 新建风格块</button></div>
+          <div id="style-list" class="style-grid"></div>
+          <div id="style-empty" class="empty-state" hidden><div>◆</div><h2>还没有风格块</h2><p>创建一个品牌预设，让每次出图保持一致。</p></div>
+        </section>
+
+        <section id="view-composer" class="view">
+          <div class="section-heading"><div><p class="eyebrow">一致性核心</p><h2>Prompt 合成器</h2><p>组合基础 Prompt 与多个风格块，最终文本会实时更新。</p></div></div>
+          <div class="composer-layout">
+            <div class="composer-controls panel-card">
+              <label class="field-label">基础 Prompt<select id="composer-base"><option value="">不选择，直接现写</option></select></label>
+              <label class="field-label">现写基础内容<textarea id="composer-manual" rows="6" placeholder="填写后会覆盖上方选择的基础 Prompt"></textarea></label>
+              <div class="field-label"><span>叠加风格块</span><div id="composer-styles" class="check-list"></div></div>
+              <label class="field-label">拼接顺序<select id="composer-order"><option value="styles-first">风格块在前，基础在后</option><option value="base-first">基础在前，风格块在后</option></select></label>
+            </div>
+            <div class="composer-output panel-card">
+              <div class="output-heading"><div><span>最终 Prompt</span><small id="composer-char-count">0 字符</small></div><button id="copy-composed-button" class="primary-button">复制最终 Prompt</button></div>
+              <textarea id="composer-output" readonly placeholder="选择基础 Prompt 或填写内容后，结果会显示在这里"></textarea>
+            </div>
+          </div>
+        </section>
+
+        <footer><div class="attribution"></div><span>数据仅保存在当前浏览器</span></footer>
+      </main>
+    </div>
+
+    <dialog id="prompt-dialog" class="editor-dialog">
+      <form id="prompt-form" method="dialog">
+        <div class="dialog-heading"><div><p class="eyebrow">纯手动录入</p><h2 id="prompt-dialog-title">新建 Prompt</h2></div><button type="button" class="icon-button" data-close-dialog="prompt-dialog" aria-label="关闭">×</button></div>
+        <div class="dialog-body">
+          <input id="prompt-id" type="hidden">
+          <div class="two-columns">
+            <label class="field-label">标题 <em>必填</em><input id="prompt-title" required maxlength="120" placeholder="例如：电影感产品主视觉"></label>
+            <label class="field-label">出图工具<select id="prompt-tool" required></select></label>
+          </div>
+          <label class="field-label">Prompt 正文 <em>必填</em><textarea id="prompt-body" required rows="6" placeholder="输入完整的正向 Prompt"></textarea></label>
+
+          <section class="form-section"><div class="form-section-title"><span>工具参数</span><small>随出图工具切换</small></div><div id="dynamic-params" class="parameter-grid"></div><label class="field-label full-span">其他参数<textarea id="prompt-other-params" rows="3" placeholder="填写工具未覆盖的参数"></textarea></label></section>
+
+          <section class="form-section">
+            <div class="form-section-title"><span>整理与关联</span></div>
+            <div class="two-columns">
+              <div><label class="field-label">标签<input id="prompt-tags" placeholder="用逗号分隔，如：产品、电影感"></label><div id="existing-tags" class="suggestion-chips"></div></div>
+              <div class="field-label"><span>关联风格块</span><div id="prompt-style-links" class="check-list compact-check-list"></div></div>
+            </div>
+            <label class="toggle-row"><input id="prompt-favorite" type="checkbox"><span>收藏这条 Prompt，取词时优先展示</span></label>
+          </section>
+
+          <section class="form-section"><div class="form-section-title"><span>图片与备注</span><small>图片仅保存在本机</small></div><div class="two-columns"><div><label class="upload-box">上传参考图（可多张）<input id="reference-images" type="file" accept="image/*" multiple></label><div id="reference-preview" class="image-preview-grid"></div></div><div><label class="upload-box">上传结果缩略图（1 张）<input id="result-image" type="file" accept="image/*"></label><div id="result-preview" class="image-preview-grid"></div></div></div><label class="field-label">备注<textarea id="prompt-notes" rows="3" placeholder="记录使用建议、适用场景等"></textarea></label></section>
+        </div>
+        <div class="dialog-actions"><button type="button" class="ghost-button" data-close-dialog="prompt-dialog">取消</button><button type="submit" class="primary-button">保存 Prompt</button></div>
+      </form>
+    </dialog>
+
+    <dialog id="style-dialog" class="editor-dialog small-dialog">
+      <form id="style-form" method="dialog">
+        <div class="dialog-heading"><div><p class="eyebrow">复用片段</p><h2 id="style-dialog-title">新建风格块</h2></div><button type="button" class="icon-button" data-close-dialog="style-dialog" aria-label="关闭">×</button></div>
+        <div class="dialog-body">
+          <input id="style-id" type="hidden">
+          <label class="field-label">名称 <em>必填</em><input id="style-name" required maxlength="80" placeholder="例如：品牌蓝调"></label>
+          <label class="field-label">内容 <em>必填</em><textarea id="style-content" required rows="8" placeholder="配色、情绪、光线、材质，以及绝不要出现的内容"></textarea></label>
+          <label class="toggle-row"><input id="style-brand" type="checkbox"><span>设为品牌预设（置顶高亮）</span></label>
+        </div>
+        <div class="dialog-actions"><button type="button" class="ghost-button" data-close-dialog="style-dialog">取消</button><button type="submit" class="primary-button">保存风格块</button></div>
+      </form>
+    </dialog>
+
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+    <script src="config.js"></script>
+    <script src="shared/core.js"></script>
+    <script src="shared/storage.js"></script>
+    <script src="options.js"></script>
+  </body>
+</html>

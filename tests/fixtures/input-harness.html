@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8">
+    <title>取词器输入测试</title>
+    <style>
+      body { max-width: 860px; margin: 60px auto; padding: 0 24px; color: #edf1f7; background: #10131a; font: 16px system-ui; }
+      label { display: grid; gap: 8px; margin: 24px 0; }
+      input, textarea, [contenteditable] { min-height: 44px; padding: 12px; border: 1px solid #495166; border-radius: 8px; color: white; background: #171c26; }
+      [contenteditable] { min-height: 90px; }
+      .fake-node { padding: 22px; border: 1px dashed #65708a; border-radius: 14px; }
+    </style>
+  </head>
+  <body>
+    <h1>Prompt Atelier 输入验收页</h1>
+    <label>普通输入框<input id="plain-input" value="开头｜结尾"></label>
+    <label>多行输入框<textarea id="textarea">已有内容：</textarea></label>
+    <label>Contenteditable（模拟 ChatGPT / Midjourney）<div id="contenteditable" contenteditable="true">已有内容：</div></label>
+    <div class="fake-node"><strong>非标准画布节点（模拟回退场景）</strong><p>先点击这里，再用快捷键打开取词器，应复制而不是插入。</p></div>
+  </body>
+</html>

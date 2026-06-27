@@ -1,0 +1,10 @@
+{
+  "name": "prompt-atelier-extension",
+  "version": "1.0.0",
+  "private": true,
+  "description": "AI 出图 Prompt 管理与快捷取词浏览器扩展",
+  "scripts": {
+    "test": "node --test tests/*.test.js",
+    "check": "node --check config.js && node --check shared/core.js && node --check shared/storage.js && node --check service-worker.js && node --check options.js && node --check content.js && node --test tests/*.test.js"
+  }
+}
